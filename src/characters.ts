@@ -1,7 +1,7 @@
 import { Application, Assets, Point, Renderer, Sprite } from "pixi.js";
 import { BouncySprite } from "./types/sprites";
 
-const addSprite = async (
+const addBouncySprite = async (
   app: Application<Renderer>,
   asset: string,
   mass: number,
@@ -26,4 +26,4 @@ const addSprite = async (
   return s;
 };
 
-export { addSprite };
+export { addBouncySprite };

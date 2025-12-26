@@ -1,32 +1,38 @@
 import { Application, Point } from "pixi.js";
-import { addSprite } from "./characters";
+import { addBouncySprite } from "./characters";
 import { BouncySprite } from "./types/sprites";
 
-const MOVEMENT_SPEED = 0.5;
-const IMPULSE_POWER = 5;
+const MOVEMENT_SPEED = 0.4;
+const IMPULSE_POWER = 4.6;
+const SPRITE_SIZE = 100;
+const SPRITE_EDGE = 46;
 
 (async () => {
   const app = new Application();
-  await app.init({ background: "#1099bb", resizeTo: window });
+  await app.init({ background: "#7181c1ff", resizeTo: window });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
-
-  const mouseCoords = new Point(0, 0);
 
   app.stage.eventMode = "static";
   app.stage.hitArea = app.screen;
 
+  const mouseCoords = new Point(0, 0);
   app.stage.on("mousemove", (e) => {
     mouseCoords.x = e.global.x;
     mouseCoords.y = e.global.y;
   });
 
+  app.stage.on("touchmove", (e) => {
+    mouseCoords.x = e.global.x;
+    mouseCoords.y = e.global.y;
+  });
+
   // Add characters
-  const lilFellaStartingPosition = new Point(
-    (app.screen.width - 100) / 2,
-    (app.screen.height - 100) / 2
+  const initLilFellaPosition = new Point(
+    (app.screen.width - SPRITE_SIZE) / 2,
+    (app.screen.height - SPRITE_SIZE) / 2
   );
-  const lilFella = await addSprite(app, "lil-fella.svg", 3, lilFellaStartingPosition);
-  const sofiaLogo = await addSprite(app, "sofia-logo.svg", 1);
+  const lilFella = await addBouncySprite(app, "lil-fella.svg", 3, initLilFellaPosition);
+  const sofiaLogo = await addBouncySprite(app, "sofia-logo.svg", 1, mouseCoords);
 
   // Listen for animate update
   app.ticker.add((ticker) => {
@@ -36,20 +42,20 @@ const IMPULSE_POWER = 5;
     sofiaLogo.vx = sofiaLogo.vx * 0.99;
     sofiaLogo.vy = sofiaLogo.vy * 0.99;
 
-    // Check if lilFella has moved off screen
-    if (lilFella.x < 0 || lilFella.x > app.screen.width - 100) {
+    // Bounce lilFella off the edges!
+    if (lilFella.x < SPRITE_EDGE || lilFella.x > app.screen.width - SPRITE_EDGE) {
       lilFella.vx = -lilFella.vx;
     }
-    if (lilFella.y < 0 || lilFella.y > app.screen.height - 100) {
+    if (lilFella.y < SPRITE_EDGE || lilFella.y > app.screen.height - SPRITE_EDGE) {
       lilFella.vy = -lilFella.vy;
     }
 
     // Pop lilFella back in middle
     if (
-      lilFella.x < -30 ||
-      lilFella.x > app.screen.width + 30 ||
-      lilFella.y < -30 ||
-      lilFella.y > app.screen.height + 30
+      lilFella.x < -SPRITE_EDGE ||
+      lilFella.x > app.screen.width + SPRITE_EDGE ||
+      lilFella.y < -SPRITE_EDGE ||
+      lilFella.y > app.screen.height + SPRITE_EDGE
     ) {
       lilFella.position.set((app.screen.width - 100) / 2, (app.screen.height - 100) / 2);
     }
@@ -75,8 +81,8 @@ const IMPULSE_POWER = 5;
     if (collisionDetected(lilFella, sofiaLogo)) {
       const collisionPush = collisionResponse(lilFella, sofiaLogo);
 
-      sofiaLogo.vx = collisionPush.x * lilFella.mass;
-      sofiaLogo.vy = collisionPush.y * lilFella.mass;
+      sofiaLogo.vx = collisionPush.x * lilFella.mass * 0.1;
+      sofiaLogo.vy = collisionPush.y * lilFella.mass * 0.1;
 
       lilFella.vx = -(collisionPush.x * sofiaLogo.mass);
       lilFella.vy = -(collisionPush.y * sofiaLogo.mass);
@@ -91,33 +97,34 @@ const IMPULSE_POWER = 5;
 })();
 
 function collisionDetected(spriteA: BouncySprite, spriteB: BouncySprite) {
-  const boundsA = spriteA.getBounds();
-  const boundsB = spriteB.getBounds();
+  const boundsA = spriteA.getBounds(); // lilFella
+  const boundsB = spriteB.getBounds(); // sofiaLogo
 
   return (
-    boundsA.x < boundsB.x + boundsB.width &&
-    boundsA.x + boundsA.width > boundsB.x &&
+    boundsA.x < boundsB.x + boundsB.width && // lilFella.x < (sofiaLogo.x + sofiaLogo.width)
+    boundsA.x + boundsA.width > boundsB.x && //
     boundsA.y < boundsB.y + boundsB.height &&
     boundsA.y + boundsA.height > boundsB.y
   );
 }
 
 function collisionResponse(spriteA: BouncySprite, spriteB: BouncySprite) {
-  const dx = spriteB.x - spriteA.x;
-  const dy = spriteB.y - spriteA.y;
+  if (!spriteA || !spriteB) {
+    return new Point(0);
+  }
+  const horizontal = spriteB.x - spriteA.x;
+  const vertical = spriteB.y - spriteA.y;
+  const distance = Math.sqrt(horizontal * horizontal + vertical * vertical);
 
-  // Avoid division by zero
-  const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+  const collisionRaw = new Point(horizontal, vertical);
+  const collision = new Point(collisionRaw.x / distance, collisionRaw.y / distance);
 
-  const vCollision = new Point(dx, dy);
-  const vCollisionNorm = new Point(vCollision.x / dist, vCollision.y / dist);
   const vRelativeVelocity = new Point(spriteA.vx - spriteB.vx, spriteA.vy - spriteB.vy);
 
-  const speed = vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y;
+  const speed = vRelativeVelocity.x * collision.x + vRelativeVelocity.y * collision.y;
+  const impulse = (IMPULSE_POWER * speed) / (spriteA.mass + spriteB.mass);
 
-  const impulse = (IMPULSE_POWER * speed) / spriteA.mass;
-
-  return new Point(impulse * vCollisionNorm.x, impulse * vCollisionNorm.y);
+  return new Point(impulse * collision.x, impulse * collision.y);
 }
 
 function distance(pointA: Point, pointB: Point) {
