@@ -9,7 +9,7 @@ const SPRITE_EDGE = 46;
 
 (async () => {
   const app = new Application();
-  await app.init({ background: "#7181c1ff", resizeTo: window });
+  await app.init({ backgroundAlpha: 0, resizeTo: window });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
   app.stage.eventMode = "static";
