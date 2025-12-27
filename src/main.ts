@@ -36,14 +36,6 @@ const SAFE_EDGE = 46;
   );
   const initialFella = await addBouncySprite(app, "lil-fella.svg", 3, startingPosFella);
 
-  console.log("hero", { x: hero.x, y: hero.y, width: hero.width, height: hero.height });
-  console.log("initialFella", {
-    x: initialFella.x,
-    y: initialFella.y,
-    width: initialFella.width,
-    height: initialFella.height,
-  });
-
   let hasCollided = false;
   const initialAngle = Math.floor(Math.random() * (350 - 10 + 1)) + 10;
 
