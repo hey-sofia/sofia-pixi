@@ -5,7 +5,7 @@ const addBouncySprite = async (
   app: Application<Renderer>,
   asset: string,
   mass: number,
-  point?: Point
+  point?: Point,
 ): Promise<BouncySprite> => {
   const texture = await Assets.load(`/assets/${asset}`);
   const s = new Sprite(texture) as BouncySprite;

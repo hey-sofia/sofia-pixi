@@ -1,14 +1,12 @@
 # sofia-pixi
 
-## Overview
-
 This repo currently just serves as a little demo/experimentation lab for my [PixiJS](https://pixijs.com) work.
 
 Normally I'd keep this sort of thing private, but the visual nature of this stuff + ease of sharing made me turn it into a live project instead. Sticking this in a live project will also make me more motivated to develop it further 😅
 
 Go to [pixi.sofia.bio](https://pixi.sofia.bio) to see it in action!
 
-## Current Status
+## status
 
 Key - ✅ (Mostly) Complete | 🟡 Active/In-progress | 💀 Dead/Removed/Broken
 
@@ -18,10 +16,11 @@ Key - ✅ (Mostly) Complete | 🟡 Active/In-progress | 💀 Dead/Removed/Broken
 | Collision response  | ✅  |
 | Out-of-bounds logic | 🟡  |
 
-## TODO
+## todo
 
 - Polish out-of-bounds logic (a bit janky atm)
 - Menus + basic UI
+- UI/Sprite size adapted for different screen sizes
 - More sprites on-screen at once
 - Ability for player to add sprites on-demand
   - Some customisation options would be cool too!
