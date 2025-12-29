@@ -42,7 +42,7 @@ const SPRITE_COLLISION_RADIUS = 46
   app.stage.addChild(hero)
 
   // Add 'enemy' sprite
-  const enemyStartingPosition = new Point(
+  const enemyStartingPoint = new Point(
     app.screen.width - SPRITE_SIZE,
     (app.screen.height - SPRITE_SIZE * 3) / 2
   )
@@ -51,7 +51,7 @@ const SPRITE_COLLISION_RADIUS = 46
     shape: "circle",
     radius: 50,
     mass: 3,
-    point: enemyStartingPosition,
+    point: enemyStartingPoint,
   })
   app.stage.addChild(enemy)
 
@@ -60,7 +60,7 @@ const SPRITE_COLLISION_RADIUS = 46
   let concurrentCollisions = 0
 
   // random initial path for enemy
-  const initialAngle = Math.floor(Math.random() * (350 - 10 + 1)) + 10
+  const enemyStartingAngle = Math.floor(Math.random() * 360)
 
   app.ticker.add((ticker) => {
     let tickCollisions = 0
@@ -71,15 +71,12 @@ const SPRITE_COLLISION_RADIUS = 46
     hero.velocity.x = hero.velocity.x * 0.99
 
     // Bounce lilFella off the edges!
-    if (enemy.x < SPRITE_COLLISION_RADIUS || enemy.x > app.screen.width - SPRITE_COLLISION_RADIUS) {
+    if (enemy.x < 0 || enemy.x > app.screen.width - SPRITE_SIZE) {
       hasCollided = true
       tickCollisions += 1
       enemy.velocity.x = enemy.velocity.x === 0 ? -1 : -enemy.velocity.x
     }
-    if (
-      enemy.y < SPRITE_COLLISION_RADIUS ||
-      enemy.y > app.screen.height - SPRITE_COLLISION_RADIUS
-    ) {
+    if (enemy.y < 0 || enemy.y > app.screen.height - SPRITE_SIZE) {
       hasCollided = true
       tickCollisions += 1
       enemy.velocity.y = enemy.velocity.y === 0 ? -1.2 : -enemy.velocity.y
@@ -136,8 +133,8 @@ const SPRITE_COLLISION_RADIUS = 46
 
     // Until lil fella collides with something it should float around
     if (!hasCollided) {
-      enemy.velocity.x = Math.cos(initialAngle) * 2.7
-      enemy.velocity.y = Math.sin(initialAngle) * 2.7
+      enemy.velocity.x = Math.cos(enemyStartingAngle) * 2.7
+      enemy.velocity.y = Math.sin(enemyStartingAngle) * 2.7
     }
 
     // If stuck, up the velocity
