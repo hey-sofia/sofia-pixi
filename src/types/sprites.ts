@@ -14,11 +14,12 @@ export type PhysicsSpriteOptions = {
  * Sprite with physical properties like velocity, mass, radius, and shape
  */
 export class PhysicsSprite extends Sprite {
-  velocity: Point = new Point(0)
   /** Not currently in-use, may be helpful later */
   shape: "circle" | "square" = "circle"
   radius: number
   mass: number = 1
+
+  velocity: Point = new Point(0)
 
   constructor(o: PhysicsSpriteOptions) {
     super()
@@ -36,6 +37,8 @@ export class PhysicsSprite extends Sprite {
     } else {
       this.position.set(0)
     }
+
+    this.anchor.set(0.5)
 
     // physical properties
     this.radius = o.radius

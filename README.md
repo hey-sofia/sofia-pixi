@@ -2,7 +2,7 @@
 
 This repo currently just serves as a little demo/experimentation lab for my [PixiJS](https://pixijs.com) work.
 
-Normally I'd keep this sort of thing private, but the visual nature of this stuff + ease of sharing made me turn it into a live project instead. Sticking this in a live project will also make me more motivated to develop it further 😅
+Normally I'd keep this sort of thing private, but the visual nature of this stuff + ease of sharing made me turn it into a live project instead. Sticking this in a live project will also make me more motivated to develop it further! 😅
 
 Go to [pixi.sofia.bio](https://pixi.sofia.bio) to see it in action!
 
@@ -36,5 +36,5 @@ Key - ✅ (Mostly) Complete | 🟡 Active/In-progress | 💀 Dead/Removed/Broken
   - Probably via local storage initially, with view to move to something more robust when required for other things like...
 - Real-time multiplayer
   - Likely via socket.io and a simple node service with sqlite that ensures connected clients are all synced and their states are persisted.
-  - For persistence clients will need to auth with the server, but given this is just a silly browser game I'd like to keep things lightweight. Maybe some kind of simple hash-based auth system could work?
+  - For persistence clients will need to auth with the server, but given this is just a silly browser game I'd like to keep things as lightweight and friction-less as possible. Maybe some kind of simple hash-based auth system could work?
 - _[Stretch Goal]_ AR/XR features

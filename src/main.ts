@@ -10,10 +10,10 @@ const SPRITE_SIZE = 100
 const SPRITE_COLLISION_RADIUS = 46
 
 ;(async () => {
+  // initialise PixiJS
   const app = new Application()
   await app.init({ backgroundAlpha: 0, resizeTo: window })
   document.getElementById("pixi-container")!.appendChild(app.canvas)
-
   app.stage.eventMode = "static"
   app.stage.hitArea = app.screen
 
@@ -21,12 +21,9 @@ const SPRITE_COLLISION_RADIUS = 46
   const initMouseX = app.screen.width / 2 + SPRITE_SIZE
   const initMouseY = SPRITE_SIZE
   const mousePoint = new Point(initMouseX, initMouseY)
-  app.stage.on("mousemove", (e) => {
-    mousePoint.x = e.global.x
-    mousePoint.y = e.global.y
-  })
 
-  app.stage.on("touchmove", (e) => {
+  // event handlers
+  app.stage.on("pointermove", (e) => {
     mousePoint.x = e.global.x
     mousePoint.y = e.global.y
   })
@@ -71,12 +68,15 @@ const SPRITE_COLLISION_RADIUS = 46
     hero.velocity.x = hero.velocity.x * 0.99
 
     // Bounce lilFella off the edges!
-    if (enemy.x < 0 || enemy.x > app.screen.width - SPRITE_SIZE) {
+    if (enemy.x < SPRITE_COLLISION_RADIUS || enemy.x > app.screen.width - SPRITE_COLLISION_RADIUS) {
       hasCollided = true
       tickCollisions += 1
       enemy.velocity.x = enemy.velocity.x === 0 ? -1 : -enemy.velocity.x
     }
-    if (enemy.y < 0 || enemy.y > app.screen.height - SPRITE_SIZE) {
+    if (
+      enemy.y < SPRITE_COLLISION_RADIUS ||
+      enemy.y > app.screen.height - SPRITE_COLLISION_RADIUS
+    ) {
       hasCollided = true
       tickCollisions += 1
       enemy.velocity.y = enemy.velocity.y === 0 ? -1.2 : -enemy.velocity.y
