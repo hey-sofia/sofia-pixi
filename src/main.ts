@@ -1,13 +1,18 @@
-import { Application, Point } from "pixi.js"
+import { Application, isMobile, Point } from "pixi.js"
 import { collisionDetected, collisionResponse } from "./physics/collision"
 import { distance } from "./helpers/maths"
 import { PhysicsSprite } from "./types/sprites"
 
 const MOVEMENT_SPEED = 0.4
-const IMPULSE_POWER = 4.6
 
-const SPRITE_SIZE = 100
-const SPRITE_COLLISION_RADIUS = 46
+const IMPULSE_POWER_DESKTOP = 4.6
+const IMPULSE_POWER_MOBILE = 4.4
+
+const SPRITE_WIDTH_DESKTOP = 100
+const SPRITE_WIDTH_MOBILE = 90
+
+const SPRITE_RADIUS_DESKTOP = 50
+const SPRITE_RADIUS_MOBILE = 45
 
 ;(async () => {
   // initialise PixiJS
@@ -17,9 +22,14 @@ const SPRITE_COLLISION_RADIUS = 46
   app.stage.eventMode = "static"
   app.stage.hitArea = app.screen
 
+  // Sprite adjustments for Mobile
+  const spriteSize = isMobile.phone ? SPRITE_WIDTH_MOBILE : SPRITE_WIDTH_DESKTOP
+  const spriteRadius = isMobile.phone ? SPRITE_RADIUS_MOBILE : SPRITE_RADIUS_DESKTOP
+  const impulsePower = isMobile.phone ? IMPULSE_POWER_MOBILE : IMPULSE_POWER_DESKTOP
+
   // Mouse xy will dictate hero's xy, so initialise in sort-of middle
-  const initMouseX = app.screen.width / 2 + SPRITE_SIZE
-  const initMouseY = SPRITE_SIZE
+  const initMouseX = app.screen.width / 2 + spriteSize
+  const initMouseY = spriteSize
   const mousePoint = new Point(initMouseX, initMouseY)
 
   // event handlers
@@ -32,7 +42,7 @@ const SPRITE_COLLISION_RADIUS = 46
   const hero = new PhysicsSprite({
     asset: "sofia-logo.svg",
     shape: "circle",
-    radius: 50,
+    radius: spriteRadius,
     mass: 1,
     point: mousePoint,
   })
@@ -40,27 +50,25 @@ const SPRITE_COLLISION_RADIUS = 46
 
   // Add 'enemy' sprite
   const enemyStartingPoint = new Point(
-    app.screen.width - SPRITE_SIZE,
-    (app.screen.height - SPRITE_SIZE * 3) / 2
+    app.screen.width - spriteSize,
+    (app.screen.height - spriteSize * 3) / 2
   )
   const enemy = new PhysicsSprite({
     asset: "lil-fella.svg",
     shape: "circle",
-    radius: 50,
+    radius: spriteRadius,
     mass: 3,
     point: enemyStartingPoint,
   })
   app.stage.addChild(enemy)
 
-  // initial state
-  let hasCollided = false
-  let concurrentCollisions = 0
-
   // random initial path for enemy
   const enemyStartingAngle = Math.floor(Math.random() * 360)
 
+  // initial state
+  let hasCollided = false
+
   app.ticker.add((ticker) => {
-    let tickCollisions = 0
     enemy.velocity.x = enemy.velocity.x * 0.99
     enemy.velocity.y = enemy.velocity.y * 0.99
 
@@ -68,28 +76,15 @@ const SPRITE_COLLISION_RADIUS = 46
     hero.velocity.x = hero.velocity.x * 0.99
 
     // Bounce lilFella off the edges!
-    if (enemy.x < SPRITE_COLLISION_RADIUS || enemy.x > app.screen.width - SPRITE_COLLISION_RADIUS) {
+    const xWallColision = enemy.x < spriteRadius || enemy.x > app.screen.width - spriteRadius
+    const yCollision = enemy.y < spriteRadius || enemy.y > app.screen.height - spriteRadius
+    if (xWallColision) {
       hasCollided = true
-      tickCollisions += 1
       enemy.velocity.x = enemy.velocity.x === 0 ? -1 : -enemy.velocity.x
     }
-    if (
-      enemy.y < SPRITE_COLLISION_RADIUS ||
-      enemy.y > app.screen.height - SPRITE_COLLISION_RADIUS
-    ) {
+    if (yCollision) {
       hasCollided = true
-      tickCollisions += 1
-      enemy.velocity.y = enemy.velocity.y === 0 ? -1.2 : -enemy.velocity.y
-    }
-
-    // Pop lilFella back in middle
-    if (
-      enemy.x <= -SPRITE_COLLISION_RADIUS ||
-      enemy.x >= app.screen.width + SPRITE_COLLISION_RADIUS ||
-      enemy.y <= -SPRITE_COLLISION_RADIUS ||
-      enemy.y >= app.screen.height + SPRITE_COLLISION_RADIUS
-    ) {
-      enemy.position.set((app.screen.width - 100) / 2, (app.screen.height - 100) / 2)
+      enemy.velocity.y = enemy.velocity.y === 0 ? -1 : -enemy.velocity.y
     }
 
     // tie hero position to mouse position, adjustable via MOVEMENT_SPEED
@@ -106,7 +101,6 @@ const SPRITE_COLLISION_RADIUS = 46
       const distMouseToLogo = distance(mousePoint, hero.position)
       const logoSpeed = distMouseToLogo * MOVEMENT_SPEED
 
-      // console.log(angleToMouse)
       hero.velocity.x = Math.cos(angleToMouse) * logoSpeed
       hero.velocity.y = Math.sin(angleToMouse) * logoSpeed
     }
@@ -114,8 +108,7 @@ const SPRITE_COLLISION_RADIUS = 46
     // track collision, apply small impact to hero and big impact to enemy
     if (collisionDetected(enemy, hero)) {
       hasCollided = true
-      tickCollisions += 1
-      const collisionPush = collisionResponse(enemy, hero, IMPULSE_POWER)
+      const collisionPush = collisionResponse(enemy, hero, impulsePower)
 
       hero.velocity.x = collisionPush.x * enemy.mass * 0.1
       hero.velocity.y = collisionPush.y * enemy.mass * 0.1
@@ -124,27 +117,25 @@ const SPRITE_COLLISION_RADIUS = 46
       enemy.velocity.y = -(collisionPush.y * hero.mass)
     }
 
-    // tally concurrent collisions
-    if (tickCollisions > 0) {
-      concurrentCollisions += tickCollisions
-    } else {
-      concurrentCollisions = 0
-    }
-
     // Until lil fella collides with something it should float around
     if (!hasCollided) {
       enemy.velocity.x = Math.cos(enemyStartingAngle) * 2.7
       enemy.velocity.y = Math.sin(enemyStartingAngle) * 2.7
     }
 
-    // If stuck, up the velocity
-    // TODO: Check if this is needed
-    const isStuck = concurrentCollisions > 30
-    const velocityMultipler = isStuck ? 15 : 1
+    const enemyOutOfBounds =
+      enemy.x < -spriteRadius ||
+      enemy.x > app.screen.width + spriteRadius ||
+      enemy.y < -spriteRadius ||
+      enemy.y > app.screen.height + spriteRadius
+    // Pop enemy back in middle if out of bounds
+    if (enemyOutOfBounds) {
+      enemy.position.set((app.screen.width - 100) / 2, (app.screen.height - 100) / 2)
+    }
 
     // apply velocity to active sprite positions
-    enemy.x += enemy.velocity.x * ticker.deltaTime * velocityMultipler
-    enemy.y += enemy.velocity.y * ticker.deltaTime * velocityMultipler
+    enemy.x += enemy.velocity.x * ticker.deltaTime
+    enemy.y += enemy.velocity.y * ticker.deltaTime
 
     hero.x += hero.velocity.x * ticker.deltaTime
     hero.y += hero.velocity.y * ticker.deltaTime
