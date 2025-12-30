@@ -29,7 +29,7 @@ const collisionResponse = (a: PhysicsSprite, b: PhysicsSprite, impulsePower?: nu
   // speed in animation-sense, rather than physics
   const speed =
     relativeVelocity.x * distanceNormalised.x + relativeVelocity.y * distanceNormalised.y
-  const power = impulsePower !== undefined ? impulsePower : IMPULSE_POWER
+  const power = impulsePower ?? IMPULSE_POWER
 
   const applyImpulse = speed > 0
   const impulse = applyImpulse ? (power * speed) / (a.mass + b.mass) : 1

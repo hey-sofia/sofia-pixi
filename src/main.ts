@@ -33,10 +33,16 @@ const SPRITE_RADIUS_MOBILE = 45
   const mousePoint = new Point(initMouseX, initMouseY)
 
   // event handlers
-  app.stage.on("pointermove", (e) => {
+  app.stage.on("mousemove", (e) => {
     mousePoint.x = e.global.x
     mousePoint.y = e.global.y
   })
+  if (isMobile.phone) {
+    app.stage.on("touchmove", (e) => {
+      mousePoint.x = e.global.x
+      mousePoint.y = e.global.y
+    })
+  }
 
   // Add hero sprite
   const hero = new PhysicsSprite({
