@@ -1,24 +1,31 @@
 # sofia-pixi
 
-This repo currently just serves as a little demo/experimentation lab for my [PixiJS](https://pixijs.com) work.
+A little demo/experimentation lab for my [PixiJS](https://pixijs.com) work.
 
-Normally I'd keep this sort of thing private, but the visual nature of this stuff + ease of sharing made me turn it into a live project instead. Sticking this in a live project will also make me more motivated to develop it further! 😅
+Normally I'd keep this sort of thing private, but the visual nature of this stuff + ease of sharing made me turn it into a live project instead. Being a live projects also makes me more motivated to develop it (and hopefully my skills!) further! 😅
+
+Essentially this project is a vehicle for me to teach myself game development concepts like graphics, animation, physics, and developing fun UIs! Encapsulating all of this in a single, cohesive game/demo thing also presents a fun challenge.
 
 Go to [pixi.sofia.bio](https://pixi.sofia.bio) to see it in action!
 
 ## status
 
-Key - ✅ (Mostly) Complete | 🟡 Active/In-progress | 💀 Dead/Removed/Broken
+| Feature                |     |
+| ---------------------- | --- |
+| Collision detection    | ✅  |
+| Collision response     | ✅  |
+| Out-of-bounds logic    | ✅  |
+| Adjustments for mobile | 🔨  |
+| Menus + basic UI       | 🔨  |
 
-| Feature             |     |
-| ------------------- | --- |
-| Collision detection | ✅  |
-| Collision response  | ✅  |
-| Out-of-bounds logic | 🟡  |
+Key:
+✅ Complete (or mostly complete with room for tweaks later)
+🔨 Active
+❌ Dead/Removed/Broken
 
 ## todo
 
-- Polish out-of-bounds logic (a bit janky atm)
+- ~~Polish out-of-bounds logic (a bit janky atm)~~
 - Menus + basic UI
 - UI/Sprite size adapted for different screen sizes
 - More sprites on-screen at once
