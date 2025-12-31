@@ -2,8 +2,8 @@ import { Application, isMobile, Point } from "pixi.js"
 import { collisionDetected, collisionResponse } from "./physics/collision"
 import { distance } from "./utils/maths"
 import { PhysicsSprite } from "./types/sprites"
-import { UIButton } from "./types/ui/components/buttons"
-import { UIColors } from "./types/ui/colors/colors"
+// import { UIButton } from "./types/ui/components/buttons"
+// import { UIColors } from "./types/ui/colors/colors"
 
 const MOVEMENT_SPEED = 0.4
 
@@ -25,6 +25,7 @@ const SPRITE_RADIUS_MOBILE = 45
   app.stage.cursor = "auto"
   app.stage.hitArea = app.screen
 
+  // WIP
   // const button = new UIButton(
   //   {
   //     labelText: "Options",
@@ -66,7 +67,7 @@ const SPRITE_RADIUS_MOBILE = 45
   // Add hero sprite
   const hero = new PhysicsSprite({
     asset: "sofia-logo.svg",
-    shape: "circle",
+    shapeType: "circle",
     radius: spriteRadius,
     mass: 1,
     point: mousePoint,
@@ -80,7 +81,7 @@ const SPRITE_RADIUS_MOBILE = 45
   )
   const enemy = new PhysicsSprite({
     asset: "lil-fella.svg",
-    shape: "circle",
+    shapeType: "circle",
     radius: spriteRadius,
     mass: 3,
     point: enemyStartingPoint,
@@ -131,7 +132,7 @@ const SPRITE_RADIUS_MOBILE = 45
     }
 
     // track collision, apply small impact to hero and big impact to enemy
-    if (collisionDetected(enemy, hero)) {
+    if (collisionDetected(hero, enemy)) {
       hasCollided = true
       const collisionPush = collisionResponse(enemy, hero, impulsePower)
 

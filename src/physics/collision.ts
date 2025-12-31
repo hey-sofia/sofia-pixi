@@ -8,8 +8,13 @@ const IMPULSE_POWER = 4.6
 const collisionDetected = (a: PhysicsSprite, b: PhysicsSprite) => {
   if (!a || !b) return false
 
-  const d = distance(a.position, b.position)
-  return d < a.radius + b.radius
+  const aShape = a.getShape()
+  const bShape = b.getShape()
+
+  if (aShape && bShape) {
+    return aShape.strokeContains(bShape.x, bShape.y, b.width)
+  }
+  return distance(a.position, b.position) < a.radius + b.radius
 }
 
 const collisionResponse = (a: PhysicsSprite, b: PhysicsSprite, impulsePower?: number) => {

@@ -1,21 +1,21 @@
-import { Assets, Point, Sprite } from "pixi.js"
+import { Assets, Circle, Point, Rectangle, Sprite } from "pixi.js"
 
-export type SpriteShape = "circle" | "square"
+export type SpriteShape = "circle" | "rectangle"
 
 export type PhysicsSpriteOptions = {
   asset: string
-  /** Not currently in-use, may be helpful later */
-  shape: "circle" | "square"
+  shapeType: SpriteShape
   radius: number
   mass: number
   point?: Point
 }
+
 /**
  * Sprite with physical properties like velocity, mass, radius, and shape
  */
 export class PhysicsSprite extends Sprite {
   /** Not currently in-use, may be helpful later */
-  shape: "circle" | "square" = "circle"
+  shapeType: SpriteShape = "circle"
   radius: number
   mass: number = 1
 
@@ -41,10 +41,19 @@ export class PhysicsSprite extends Sprite {
     this.anchor.set(0.5)
 
     // physical properties
+    this.shapeType = o.shapeType
     this.radius = o.radius
     const diameter = o.radius * 2
     this.width = this.height = diameter
-    this.shape = o.shape
     this.mass = o.mass
+  }
+
+  getShape() {
+    switch (this.shapeType) {
+      case "circle":
+        return new Circle(this.x, this.y, this.radius)
+      case "rectangle":
+        return new Rectangle(this.x, this.y, this.width, this.height)
+    }
   }
 }
