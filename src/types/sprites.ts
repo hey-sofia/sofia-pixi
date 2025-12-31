@@ -14,7 +14,6 @@ export type PhysicsSpriteOptions = {
  * Sprite with physical properties like velocity, mass, radius, and shape
  */
 export class PhysicsSprite extends Sprite {
-  /** Not currently in-use, may be helpful later */
   shapeType: SpriteShape = "circle"
   radius: number
   mass: number = 1

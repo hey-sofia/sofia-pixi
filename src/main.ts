@@ -101,18 +101,6 @@ const SPRITE_RADIUS_MOBILE = 45
     hero.velocity.x = hero.velocity.x * 0.99
     hero.velocity.x = hero.velocity.x * 0.99
 
-    // Bounce lilFella off the edges!
-    const xWallColision = enemy.x < spriteRadius || enemy.x > app.screen.width - spriteRadius
-    const yCollision = enemy.y < spriteRadius || enemy.y > app.screen.height - spriteRadius
-    if (xWallColision) {
-      hasCollided = true
-      enemy.velocity.x = enemy.velocity.x === 0 ? -1 : -enemy.velocity.x
-    }
-    if (yCollision) {
-      hasCollided = true
-      enemy.velocity.y = enemy.velocity.y === 0 ? -1 : -enemy.velocity.y
-    }
-
     // tie hero position to mouse position, adjustable via MOVEMENT_SPEED
     if (
       app.screen.width > mousePoint.x ||
@@ -141,6 +129,18 @@ const SPRITE_RADIUS_MOBILE = 45
 
       enemy.velocity.x = -(collisionPush.x * hero.mass)
       enemy.velocity.y = -(collisionPush.y * hero.mass)
+    }
+
+    // Bounce lilFella off the edges!
+    const xWallColision = enemy.x < spriteRadius || enemy.x > app.screen.width - spriteRadius
+    const yCollision = enemy.y < spriteRadius || enemy.y > app.screen.height - spriteRadius
+    if (xWallColision) {
+      hasCollided = true
+      enemy.velocity.x = -enemy.velocity.x
+    }
+    if (yCollision) {
+      hasCollided = true
+      enemy.velocity.y = -enemy.velocity.y
     }
 
     // Until lil fella collides with something it should float around
