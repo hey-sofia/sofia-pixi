@@ -1,7 +1,9 @@
 import { Application, isMobile, Point } from "pixi.js"
 import { collisionDetected, collisionResponse } from "./physics/collision"
-import { distance } from "./helpers/maths"
+import { distance } from "./utils/maths"
 import { PhysicsSprite } from "./types/sprites"
+import { UIButton } from "./types/ui/components/buttons"
+import { UIColors } from "./types/ui/colors/colors"
 
 const MOVEMENT_SPEED = 0.4
 
@@ -20,7 +22,24 @@ const SPRITE_RADIUS_MOBILE = 45
   await app.init({ backgroundAlpha: 0, resizeTo: window })
   document.getElementById("pixi-container")!.appendChild(app.canvas)
   app.stage.eventMode = "static"
+  app.stage.cursor = "auto"
   app.stage.hitArea = app.screen
+
+  // const button = new UIButton(
+  //   {
+  //     labelText: "Options",
+  //     layout: {
+  //       backgroundColor: UIColors.LILAC_FILL,
+  //       borderRadius: 20,
+  //       width: 150,
+  //       height: 50,
+  //       alignContent: "center",
+  //     },
+  //   },
+  //   app.ticker
+  // )
+
+  // app.stage.addChild(button)
 
   // Sprite adjustments for Mobile
   const spriteSize = isMobile.phone ? SPRITE_WIDTH_MOBILE : SPRITE_WIDTH_DESKTOP

@@ -1,6 +1,6 @@
 import { Point } from "pixi.js"
 import { PhysicsSprite } from "../types/sprites"
-import { distance } from "../helpers/maths"
+import { distance } from "../utils/maths"
 
 const IMPULSE_POWER = 4.6
 
