@@ -70,9 +70,6 @@ export class UIButton extends LayoutContainer {
 
     this.layout.setStyle({
       backgroundColor: color.toHexa(),
-      borderRadius: 20,
-      width: 150,
-      height: 50,
     })
   }
   private onPointerOver() {

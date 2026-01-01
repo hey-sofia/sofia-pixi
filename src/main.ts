@@ -1,9 +1,10 @@
-import { Application, isMobile, Point } from "pixi.js"
+import { Application, isMobile, Point, Rectangle, Renderer } from "pixi.js"
 import { collisionDetected, collisionResponse } from "./physics/collision"
 import { distance } from "./utils/maths"
 import { PhysicsSprite } from "./types/sprites"
-// import { UIButton } from "./types/ui/components/buttons"
-// import { UIColors } from "./types/ui/colors/colors"
+import { UIButton } from "./types/ui/components/buttons"
+import { UIColors } from "./types/ui/colors/colors"
+import { addGameObjects } from "./game/objects"
 
 const MOVEMENT_SPEED = 0.4
 
@@ -16,6 +17,12 @@ const SPRITE_WIDTH_MOBILE = 90
 const SPRITE_RADIUS_DESKTOP = 50
 const SPRITE_RADIUS_MOBILE = 45
 
+const X_PADDING = 20
+const Y_PADDING = 20
+
+// initial state
+let hasCollided = false
+
 ;(async () => {
   // initialise PixiJS
   const app = new Application()
@@ -26,73 +33,37 @@ const SPRITE_RADIUS_MOBILE = 45
   app.stage.hitArea = app.screen
 
   // WIP
-  // const button = new UIButton(
-  //   {
-  //     labelText: "Options",
-  //     layout: {
-  //       backgroundColor: UIColors.LILAC_FILL,
-  //       borderRadius: 20,
-  //       width: 150,
-  //       height: 50,
-  //       alignContent: "center",
-  //     },
-  //   },
-  //   app.ticker
-  // )
+  const buttonActionText = isMobile.phone ? "Tap on" : "Hover over"
+  const button = new UIButton(
+    {
+      labelText: `${buttonActionText} me 🥴`,
+      layout: {
+        backgroundColor: UIColors.LILAC_FILL,
+        borderRadius: 20,
+        width: 220,
+        height: 50,
+        alignContent: "center",
+      },
+    },
+    app.ticker
+  )
+  button.position.set(X_PADDING, Y_PADDING)
 
-  // app.stage.addChild(button)
+  app.stage.addChild(button)
 
   // Sprite adjustments for Mobile
   const spriteSize = isMobile.phone ? SPRITE_WIDTH_MOBILE : SPRITE_WIDTH_DESKTOP
   const spriteRadius = isMobile.phone ? SPRITE_RADIUS_MOBILE : SPRITE_RADIUS_DESKTOP
   const impulsePower = isMobile.phone ? IMPULSE_POWER_MOBILE : IMPULSE_POWER_DESKTOP
 
-  // Mouse xy will dictate hero's xy, so initialise in sort-of middle
-  const initMouseX = app.screen.width / 2 + spriteSize
-  const initMouseY = spriteSize
-  const mousePoint = new Point(initMouseX, initMouseY)
+  // Add game objects (character sprites, mouse point etc.)
+  const { hero, enemy, mousePoint } = addGameObjects(app, spriteSize, spriteRadius)
 
   // event handlers
-  app.stage.on("mousemove", (e) => {
-    mousePoint.x = e.global.x
-    mousePoint.y = e.global.y
-  })
-  if (isMobile.phone) {
-    app.stage.on("touchmove", (e) => {
-      mousePoint.x = e.global.x
-      mousePoint.y = e.global.y
-    })
-  }
-
-  // Add hero sprite
-  const hero = new PhysicsSprite({
-    asset: "sofia-logo.svg",
-    shapeType: "circle",
-    radius: spriteRadius,
-    mass: 1,
-    point: mousePoint,
-  })
-  app.stage.addChild(hero)
-
-  // Add 'enemy' sprite
-  const enemyStartingPoint = new Point(
-    app.screen.width - spriteSize,
-    (app.screen.height - spriteSize * 3) / 2
-  )
-  const enemy = new PhysicsSprite({
-    asset: "lil-fella.svg",
-    shapeType: "circle",
-    radius: spriteRadius,
-    mass: 3,
-    point: enemyStartingPoint,
-  })
-  app.stage.addChild(enemy)
+  addEventHandlers(app, mousePoint)
 
   // random initial path for enemy
   const enemyStartingAngle = Math.floor(Math.random() * 360)
-
-  // initial state
-  let hasCollided = false
 
   app.ticker.add((ticker) => {
     enemy.velocity.x = enemy.velocity.x * 0.99
@@ -102,12 +73,12 @@ const SPRITE_RADIUS_MOBILE = 45
     hero.velocity.x = hero.velocity.x * 0.99
 
     // tie hero position to mouse position, adjustable via MOVEMENT_SPEED
-    if (
+    const mouseOnScreen =
       app.screen.width > mousePoint.x ||
       mousePoint.x > 0 ||
       app.screen.height > mousePoint.y ||
       mousePoint.y > 0
-    ) {
+    if (hero.attachedToMouse && mouseOnScreen) {
       const toMouseDirection = new Point(mousePoint.x - hero.x, mousePoint.y - hero.y)
 
       const angleToMouse = Math.atan2(toMouseDirection.y, toMouseDirection.x)
@@ -132,16 +103,7 @@ const SPRITE_RADIUS_MOBILE = 45
     }
 
     // Bounce lilFella off the edges!
-    const xWallColision = enemy.x < spriteRadius || enemy.x > app.screen.width - spriteRadius
-    const yCollision = enemy.y < spriteRadius || enemy.y > app.screen.height - spriteRadius
-    if (xWallColision) {
-      hasCollided = true
-      enemy.velocity.x = -enemy.velocity.x
-    }
-    if (yCollision) {
-      hasCollided = true
-      enemy.velocity.y = -enemy.velocity.y
-    }
+    handleWallCollision(app.screen, enemy, hero)
 
     // Until lil fella collides with something it should float around
     if (!hasCollided) {
@@ -167,3 +129,42 @@ const SPRITE_RADIUS_MOBILE = 45
     hero.y += hero.velocity.y * ticker.deltaTime
   })
 })()
+
+function addEventHandlers(app: Application<Renderer>, mousePoint: Point) {
+  // Disable default context menu
+  app.canvas.addEventListener("contextmenu", (e) => {
+    e.preventDefault()
+  })
+
+  // follow mouse
+  app.stage.on("mousemove", (e) => {
+    mousePoint.x = e.global.x
+    mousePoint.y = e.global.y
+  })
+  if (isMobile.phone) {
+    // if mobile follow touch
+    app.stage.on("touchmove", (e) => {
+      mousePoint.x = e.global.x
+      mousePoint.y = e.global.y
+    })
+  }
+}
+
+function handleWallCollision(screen: Rectangle, enemy: PhysicsSprite, hero: PhysicsSprite) {
+  if (enemy.collidedWithWallX(screen)) {
+    hasCollided = true
+    enemy.velocity.x = -enemy.velocity.x
+  }
+  if (enemy.collidedWithWallY(screen)) {
+    hasCollided = true
+    enemy.velocity.y = -enemy.velocity.y
+  }
+
+  // if hero is not attached ensure they have collision with walls too
+  if (!hero.attachedToMouse && hero.collidedWithWallX(screen)) {
+    hero.velocity.x = -hero.velocity.x
+  }
+  if (!hero.attachedToMouse && hero.collidedWithWallY(screen)) {
+    hero.velocity.y = -hero.velocity.y
+  }
+}
