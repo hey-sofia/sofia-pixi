@@ -1,12 +1,14 @@
-import { Text } from "pixi.js"
+import { Assets, BitmapText } from "pixi.js"
+import { Fonts } from "../fonts"
 
-export const infoText = (text: string, visible: boolean = false) => {
-  const t = new Text({
+export const infoText = async (text: string, visible: boolean = false) => {
+  const fontFace = await Assets.load<FontFace>(Fonts.EXCALIFONT)
+  const t = new BitmapText({
     text,
     style: {
       fill: 0xffffff,
       fontSize: 20,
-      fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+      fontFamily: fontFace.family,
       align: "center",
     },
   })

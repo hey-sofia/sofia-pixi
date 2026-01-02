@@ -1,5 +1,5 @@
 import { Color } from "pixi.js"
-import { lerp } from "../../../utils/maths"
+import { lerp } from "../../utils/maths"
 
 /**
  * Returns new `Color` object in between two provided colors

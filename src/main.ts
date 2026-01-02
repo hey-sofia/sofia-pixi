@@ -1,10 +1,11 @@
 import { Application, isMobile, Point, Rectangle, Renderer } from "pixi.js"
 import { collisionDetected, collisionResponse } from "./physics/collision"
 import { distance } from "./utils/maths"
-import { PhysicsSprite } from "./types/sprites"
+import { PhysicsSprite } from "./types/sprites/PhysicsSprite"
 import { UIButton } from "./types/ui/components/buttons"
-import { UIColors } from "./types/ui/colors/colors"
+import { UIColors } from "./types/ui/colors"
 import { addGameObjects } from "./game/objects"
+import { initAssets } from "./utils/assets"
 
 const MOVEMENT_SPEED = 0.4
 
@@ -32,6 +33,9 @@ let hasCollided = false
   app.stage.cursor = "auto"
   app.stage.hitArea = app.screen
 
+  // load assets
+  await initAssets()
+
   // WIP
   const buttonActionText = isMobile.phone ? "Tap on" : "Hover over"
   const button = new UIButton(
@@ -57,7 +61,7 @@ let hasCollided = false
   const impulsePower = isMobile.phone ? IMPULSE_POWER_MOBILE : IMPULSE_POWER_DESKTOP
 
   // Add game objects (character sprites, mouse point etc.)
-  const { hero, enemy, mousePoint } = addGameObjects(app, spriteSize, spriteRadius)
+  const { hero, enemy, mousePoint } = await addGameObjects(app, spriteSize, spriteRadius)
 
   // event handlers
   addEventHandlers(app, mousePoint)

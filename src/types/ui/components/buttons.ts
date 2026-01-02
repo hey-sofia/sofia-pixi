@@ -1,7 +1,7 @@
 import { Color, Text, Ticker } from "pixi.js"
 import "@pixi/layout"
 import { LayoutContainer, LayoutContainerOptions } from "@pixi/layout/components"
-import { tweenColor, UIColors } from "../colors/colors"
+import { tweenColor, UIColors } from "../colors"
 import { uiLabel } from "../text/labels"
 
 export type UIButtonOptions = LayoutContainerOptions & {

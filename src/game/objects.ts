@@ -1,22 +1,24 @@
-import { Application, Renderer, Point, Rectangle, Text, isMobile } from "pixi.js"
-import { PhysicsSprite } from "../types/sprites"
+import { Application, Renderer, Point, Rectangle, Text, isMobile, BitmapText } from "pixi.js"
+import { PhysicsSprite } from "../types/sprites/PhysicsSprite"
 import { infoText } from "../types/ui/text/info"
+import { loadTextures } from "../utils/assets"
 
 const X_PADDING = 20
-const Y_PADDING = 10
+const Y_PADDING = 0
 
-export function addGameObjects(
+export async function addGameObjects(
   app: Application<Renderer>,
   spriteSize: number,
   spriteRadius: number
 ) {
+  const { logo, lilFella } = await loadTextures()
   // Mouse xy will dictate hero's xy, so initialise in sort-of middle
   const initMouseX = app.screen.width / 2 + spriteSize
   const initMouseY = spriteSize
   const mousePoint = new Point(initMouseX, initMouseY)
 
   const hero = new PhysicsSprite({
-    asset: "sofia-logo.svg",
+    texture: logo,
     shapeType: "circle",
     radius: spriteRadius,
     mass: 1,
@@ -27,7 +29,7 @@ export function addGameObjects(
   app.stage.addChild(hero)
 
   if (!isMobile.phone) {
-    const { initialMouseInfoText, mouseInfo2Text, mouseReleasedText } = addMouseInfoText(app)
+    const { initialMouseInfoText, mouseInfo2Text, mouseReleasedText } = await addMouseInfoText(app)
 
     hero.on("rightclick", () => {
       const clicksLeftBeforeRelease = hero.getClicksLeftBeforeMouseFreed()
@@ -60,7 +62,7 @@ export function addGameObjects(
     (app.screen.height - spriteSize * 3) / 2
   )
   const enemy = new PhysicsSprite({
-    asset: "lil-fella.svg",
+    texture: lilFella,
     shapeType: "circle",
     radius: spriteRadius,
     mass: 3,
@@ -71,14 +73,14 @@ export function addGameObjects(
   return { hero, enemy, mousePoint }
 }
 
-function addMouseInfoText(app: Application<Renderer>) {
+async function addMouseInfoText(app: Application<Renderer>) {
   // Starting mouse info - initally visible
-  const startingMouseInfoText = infoText("To free mouse, right-click twice", true)
+  const startingMouseInfoText = await infoText("To free mouse, right-click twice", true)
   setMouseInfoPosition(startingMouseInfoText, app.screen)
 
   // Subsequent mouse info text, not visible until respective conditions met
-  const rightClickAgainText = infoText("Right-click again")
-  const mouseFreedText = infoText("Mouse freed! Right-click on logo to re-attach")
+  const rightClickAgainText = await infoText("Right-click again")
+  const mouseFreedText = await infoText("Mouse freed! Right-click on logo to re-attach")
 
   app.stage.addChild(startingMouseInfoText, rightClickAgainText, mouseFreedText)
 
@@ -89,6 +91,6 @@ function addMouseInfoText(app: Application<Renderer>) {
   }
 }
 
-export function setMouseInfoPosition(t: Text, screen: Rectangle) {
+export function setMouseInfoPosition(t: Text | BitmapText, screen: Rectangle) {
   t.position.set(screen.width - t.width - X_PADDING, t.height + Y_PADDING)
 }

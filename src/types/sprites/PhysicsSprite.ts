@@ -1,9 +1,9 @@
-import { Assets, Circle, isMobile, Point, Rectangle, Sprite } from "pixi.js"
+import { Circle, isMobile, Point, Rectangle, Sprite, Texture } from "pixi.js"
 
 export type SpriteShape = "circle" | "rectangle"
 
 export type PhysicsSpriteOptions = {
-  asset: string
+  texture: Texture
   shapeType: SpriteShape
   radius: number
   mass: number
@@ -31,11 +31,7 @@ export class PhysicsSprite extends Sprite {
 
     this.eventMode = "static"
     this.cursor = "none"
-
-    // texture
-    Assets.load(`/assets/${o.asset}`).then((t) => {
-      this.texture = t
-    })
+    this.texture = o.texture
 
     // starting position
     if (o.point) {

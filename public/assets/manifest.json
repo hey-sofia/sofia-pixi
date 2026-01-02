@@ -1,0 +1,45 @@
+{
+  "bundles": [
+    {
+      "name": "default",
+      "assets": [
+        {
+          "alias": [
+            "fonts/Excalifont-Regular.woff2",
+            "Excalifont-Regular.woff2"
+          ],
+          "src": [
+            "fonts/Excalifont-Regular-To7YAQ.woff2"
+          ],
+          "data": {
+            "tags": {}
+          }
+        },
+        {
+          "alias": [
+            "textures/lil-fella.svg",
+            "lil-fella.svg"
+          ],
+          "src": [
+            "textures/lil-fella-eJCClw.svg"
+          ],
+          "data": {
+            "tags": {}
+          }
+        },
+        {
+          "alias": [
+            "textures/sofia-logo.svg",
+            "sofia-logo.svg"
+          ],
+          "src": [
+            "textures/sofia-logo-q01VpQ.svg"
+          ],
+          "data": {
+            "tags": {}
+          }
+        }
+      ]
+    }
+  ]
+}
