@@ -1,4 +1,4 @@
-import { Text } from "pixi.js"
+import { Text } from "pixi.js";
 
 /** Simple centre-aligned text object intended for use with `UIButton` */
 export const uiLabel = (text: string) => {
@@ -10,13 +10,13 @@ export const uiLabel = (text: string) => {
       fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
       align: "center",
     },
-  })
+  });
 
   textObj.layout = {
     alignSelf: "center",
     marginLeft: "auto",
     marginRight: "auto",
-  }
+  };
 
-  return textObj
-}
+  return textObj;
+};

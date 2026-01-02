@@ -1,4 +1,4 @@
-# sofia-pixi
+# sofi-pixi
 
 A little demo/experimentation lab for my [PixiJS](https://pixijs.com) work.
 

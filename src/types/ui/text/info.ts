@@ -1,8 +1,8 @@
-import { Assets, BitmapText } from "pixi.js"
-import { Fonts } from "../fonts"
+import { Assets, BitmapText } from "pixi.js";
+import { Fonts } from "../fonts";
 
 export const infoText = async (text: string, visible: boolean = false) => {
-  const fontFace = await Assets.load<FontFace>(Fonts.EXCALIFONT)
+  const fontFace = await Assets.load<FontFace>(Fonts.EXCALIFONT);
   const t = new BitmapText({
     text,
     style: {
@@ -11,9 +11,9 @@ export const infoText = async (text: string, visible: boolean = false) => {
       fontFamily: fontFace.family,
       align: "center",
     },
-  })
+  });
 
-  t.visible = visible
+  t.visible = visible;
 
-  return t
-}
+  return t;
+};

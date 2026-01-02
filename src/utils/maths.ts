@@ -1,10 +1,10 @@
-import { Point } from "pixi.js"
+import { Point } from "pixi.js";
 
 /** Calculate the distance between two points */
 function distance(pointA: Point, pointB: Point) {
-  const x = pointA.x - pointB.x
-  const y = pointA.y - pointB.y
-  return Math.hypot(x, y)
+  const x = pointA.x - pointB.x;
+  const y = pointA.y - pointB.y;
+  return Math.hypot(x, y);
 }
 
 /**
@@ -13,10 +13,15 @@ function distance(pointA: Point, pointB: Point) {
  * @param normalised Whether or not `a` and `b` values have been normalised (by 255)
  * @returns
  */
-const lerp = (a: number, b: number, t: number = 1, normalised: boolean = true) => {
-  const absoluteA = normalised ? a * 255 : a
-  const absoluteB = normalised ? b * 255 : b
-  return absoluteA + (absoluteB - absoluteA) * t
-}
+const lerp = (
+  a: number,
+  b: number,
+  t: number = 1,
+  normalised: boolean = true,
+) => {
+  const absoluteA = normalised ? a * 255 : a;
+  const absoluteB = normalised ? b * 255 : b;
+  return absoluteA + (absoluteB - absoluteA) * t;
+};
 
-export { distance, lerp }
+export { distance, lerp };
