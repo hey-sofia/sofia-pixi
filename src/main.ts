@@ -4,7 +4,7 @@ import { distance } from "./utils/maths"
 import { PhysicsSprite } from "./types/sprites/PhysicsSprite"
 import { UIButton } from "./types/ui/components/buttons"
 import { UIColors } from "./types/ui/colors"
-import { addGameObjects } from "./game/objects"
+import { addGameObjects as loadGameObjects } from "./game/objects"
 import { initAssets } from "./utils/assets"
 
 const MOVEMENT_SPEED = 0.4
@@ -32,6 +32,9 @@ let hasCollided = false
   app.stage.eventMode = "static"
   app.stage.cursor = "auto"
   app.stage.hitArea = app.screen
+
+  // keep stage invisible until assets have finished loading
+  app.stage.visible = false
 
   // load assets
   await initAssets()
@@ -61,7 +64,10 @@ let hasCollided = false
   const impulsePower = isMobile.phone ? IMPULSE_POWER_MOBILE : IMPULSE_POWER_DESKTOP
 
   // Add game objects (character sprites, mouse point etc.)
-  const { hero, enemy, mousePoint } = await addGameObjects(app, spriteSize, spriteRadius)
+  const { hero, enemy, mousePoint } = await loadGameObjects(app, spriteSize, spriteRadius)
+
+  // assets loaded, show stage
+  app.stage.visible = true
 
   // event handlers
   addEventHandlers(app, mousePoint)
